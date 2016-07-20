@@ -25,31 +25,50 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
+    private ListView listView;
     private AlbumsAdapter adapter;
     private List<Album> albumList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Making notification bar transparent
-        if (Build.VERSION.SDK_INT >= 21) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        changeStatusBarColor();
+        initCollapsingToolbar();
 
-        final CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        listView = (ListView) findViewById(R.id.list_view);
+
+        albumList = new ArrayList<>();
+        adapter = new AlbumsAdapter(this, albumList);
+
+        //RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+        //recyclerView.setLayoutManager(mLayoutManager);
+        //recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        //recyclerView.setItemAnimator(new DefaultItemAnimator());
+        listView.setAdapter(adapter);
+
+        prepareAlbums();
+
+     //   try {
+     //       Glide.with(this).load(R.drawable.cover).into((ImageView) findViewById(R.id.backdrop));
+     //   } catch (Exception e) {
+     //       e.printStackTrace();
+     //   }
+    }
+
+    /**
+     * Initializing collapsing toolbar
+     * Will show and hide the toolbar title on scroll
+     */
+    private void initCollapsingToolbar() {
+        final CollapsingToolbarLayout collapsingToolbar =  (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(" ");
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         appBarLayout.setExpanded(true);
 
+        // hiding & showing the title when toolbar expanded & collapsed
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
@@ -68,29 +87,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        albumList = new ArrayList<>();
-        adapter = new AlbumsAdapter(albumList);
-
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-
-        prepareAlbums();
-
-        try {
-            Glide.with(this).load(R.drawable.cover1).into((ImageView) findViewById(R.id.backdrop));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
+    /**
+     * Adding few albums for testing
+     */
     private void prepareAlbums() {
-        int[] covers = new int[]{
+      /*  int[] covers = new int[]{
                 R.drawable.album1,
                 R.drawable.album2,
                 R.drawable.album3,
@@ -101,19 +104,82 @@ public class MainActivity extends AppCompatActivity {
                 R.drawable.album8,
                 R.drawable.album9,
                 R.drawable.album10,
-                R.drawable.album11};
+                R.drawable.album11}; */
+        String[] titles = new String[]{
+                "Primo titolo",
+                "Secondo titolo",
+                "Terzo titolo",
+                "Quarto titolo",
+                "Quinto titolo",
+                "Sesto titolo",
+                "Settimo titolo",
+                "Ottavo titolo",
+                "Nono titolo",
+                "Decimo titolo",
+                "Undicesimo titolo"
+        };
 
-        for (int i = 0; i < covers.length; i++) {
-            Album a = new Album();
-            a.setName("Album: " + i);
-            a.setThumbnail(covers[i]);
+        String[] links = new String[]{
+                "http://api.androidhive.info/music/images/adele.png",
+                "http://api.androidhive.info/music/images/eminem.png",
+                "http://api.androidhive.info/music/images/mj.png",
+                "http://api.androidhive.info/music/images/rihanna.png",
+                "http://api.androidhive.info/music/images/arrehman.png",
+                "http://api.androidhive.info/music/images/alexi_murdoch.png",
+                "http://api.androidhive.info/music/images/dido.png",
+                "http://api.androidhive.info/music/images/enrique.png",
+                "http://api.androidhive.info/music/images/ennio.png",
+                "http://api.androidhive.info/music/images/backstreet_boys.png",
+                "http://api.androidhive.info/music/images/adele.png"
+        };
 
+        int[] canz = new int[]{
+                3,4,7,8,9,6,4,3,8,9,8
+        };
+
+        for(int i=0; i<links.length; i++){
+            Album a = new Album(titles[i], canz[i], links[i]);
             albumList.add(a);
         }
+        /*
+        Album a = new Album("True Romance", 13, covers[0]);
+        albumList.add(a);
 
+        a = new Album("Xscpae", 8, covers[1]);
+        albumList.add(a);
+
+        a = new Album("Maroon 5", 11, covers[2]);
+        albumList.add(a);
+
+        a = new Album("Born to Die", 12, covers[3]);
+        albumList.add(a);
+
+        a = new Album("Honeymoon", 14, covers[4]);
+        albumList.add(a);
+
+        a = new Album("I Need a Doctor", 1, covers[5]);
+        albumList.add(a);
+
+        a = new Album("Loud", 11, covers[6]);
+        albumList.add(a);
+
+        a = new Album("Legend", 14, covers[7]);
+        albumList.add(a);
+
+        a = new Album("Hello", 11, covers[8]);
+        albumList.add(a);
+
+        a = new Album("Greatest Hits", 17, covers[9]);
+        albumList.add(a);
+*/
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * RecyclerView item decoration - give equal margin around grid item
+     */
+
+    /*
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
         private int spanCount;
@@ -147,21 +213,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-    }
+    }*/
 
+    /**
+     * Converting dp to pixel
+     */
+    /*
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
-    }
-
-    /**
-     * Making notification bar transparent
-     */
-    private void changeStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.TRANSPARENT);
-        }
-    }
+    }*/
 }
+
